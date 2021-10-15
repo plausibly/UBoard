@@ -1,6 +1,6 @@
 import express from 'express';
 import db from './models/index';
-import  emailRoute from './routes/mailRoute';
+import emailRoute from './routes/emailRoute';
 
 const app = express();
 const port = 8080;
