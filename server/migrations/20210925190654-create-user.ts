@@ -28,6 +28,9 @@ module.exports = {
         type: Sequelize.STRING(32),
         allowNull: false,
         unique: true,
+        validate: {
+          isAlphanumeric: true,
+        },
       },
       password: {
         type: Sequelize.STRING,
@@ -39,13 +42,11 @@ module.exports = {
         unique: true /* In the controller, lets force email to lowercase */,
         validate: {
           isEmail: true /* Check for valid email format */,
-          is: [
-            ".*@(mail.|alum.|^$)utoronto.ca",
-          ] /* Check for utoronto domain */,
+          is: [".*@(mail.|alum.|)utoronto.ca"] /* Check for utoronto domain */,
         },
       },
       confirmed: {
-        type: Sequelize.BOOLEAN,
+        /* Email Confirmed */ type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
       lastLogin: {
@@ -54,6 +55,12 @@ module.exports = {
       karma: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
+      },
+      confirmationToken: {
+        type: Sequelize.STRING,
+      },
+      confirmationTokenExpires: {
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,

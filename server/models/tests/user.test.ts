@@ -4,7 +4,9 @@ import { User } from "../user";
 
 const UserModel: typeof User = db.User;
 
-dbSync();
+beforeAll(async () => {
+  await dbSync().catch((err) => fail(err));
+});
 
 describe("User Model ", () => {
   describe("User Creation", () => {
@@ -48,12 +50,20 @@ describe("User Model ", () => {
       ).rejects.toThrowError("Validation error");
     });
 
+    test("Ensure email is forced to lowercase in the database", async () => {
+      const usr = await makeUser("testing1234", "EMAILTESTING@UToroNTO.ca");
+
+      expect(usr).toBeDefined();
+
+      expect(usr.email).toEqual("emailtesting@utoronto.ca");
+    });
+
     test("Attempt to create two users with the same email", async () => {
       await expect(
         makeUser("acceptedPerson1", "lol@utoronto.ca")
       ).resolves.toBeDefined();
       await expect(
-        makeUser("rejectedPerson1", "lol@utoronto.ca")
+        makeUser("rejectedPerson1", "LOL@utoronto.ca")
       ).rejects.toThrowError("Validation error");
     });
 

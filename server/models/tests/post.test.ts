@@ -1,6 +1,8 @@
 import { makeUser, makePost, dbSync } from "./testHelpers";
 
-dbSync();
+beforeAll(async () => {
+  await dbSync().catch((err) => fail(err));
+});
 
 describe("Post Model", () => {
   describe("Post Creation", () => {
