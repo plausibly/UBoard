@@ -7,19 +7,19 @@ const db: any = {};
 
 let sequelize: Sequelize.Sequelize;
 
-if (process.env.CI && process.env.CI.toLowerCase() === "true") {
-  /* For CI testing */
-  sequelize = new Sequelize.Sequelize("sqlite::memory");
-} else {
-  sequelize = new Sequelize.Sequelize(config.DB_URL, {
-    dialect: config.dialect,
-    dialectOptions: {
-      ssl: {
-        /* Required for our host */ rejectUnauthorized: false,
-      },
-    },
-  });
-}
+// if (process.env.CI && process.env.CI.toLowerCase() === "true") {
+/* For CI testing */
+sequelize = new Sequelize.Sequelize("sqlite::memory");
+// } else {
+//   sequelize = new Sequelize.Sequelize(config.DB_URL, {
+//     dialect: config.dialect,
+//     dialectOptions: {
+//       ssl: {
+//         /* Required for our host */ rejectUnauthorized: false,
+//       },
+//     },
+//   });
+// }
 
 fs.readdirSync(__dirname)
   .filter((file: string) => {
