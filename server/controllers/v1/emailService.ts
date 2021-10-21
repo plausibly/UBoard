@@ -4,10 +4,9 @@ import sgMail from "@sendgrid/mail";
 require("dotenv").config();
 sgMail.setApiKey(<string>process.env.SENDGRID_API);
 
+export const CONF_TYPE = "c"; /* Account email confirmation */
+export const RESET_TYPE = "r"; /* Password Reset */
 const userModel: typeof User = db.User;
-
-const CONF_TYPE = "c";
-const RESET_TYPE = "r";
 
 /* Generates and returns a random alphanumeric string. Used in validating
     emails. */
@@ -23,29 +22,40 @@ function generateRandom(): string {
   return str;
 }
 
-/* Assign a specific confirmation token to a user and send them an email. The email sent will be formatted based on
-if type is CONF_TYPE (account email confirmation) or RESET_TYPE. */
-export async function sendConfirmation(user: User, type: string) {
-  /* URL Setup */
+/* Assign a specific confirmation token the provided user based on the provided type (confirmation or password reset).
+If shouldEmail is true, an email is sent to the User. Returns true on success, or false on failure.*/
+export async function generateEmailToken(
+  user: User,
+  type: string,
+  shouldEmail: boolean
+): Promise<boolean> {
   const confToken = generateRandom();
 
   var dateExpires = new Date();
   dateExpires.setUTCHours(dateExpires.getUTCHours() + 12); // expires 12hrs from now
 
+  /* Assign token to user (invalidate previous ones)*/
   try {
-    await userModel.update(
-      {
-        // assign token to user, note that generating a new token invalidates any previous ones
-        confirmationToken: `${type}:${confToken}`,
-        confirmationTokenExpires: dateExpires,
-      },
-      { where: { id: user.id } }
-    );
+    await user.update({
+      confirmationToken: `${type}:${confToken}`,
+      confirmationTokenExpires: dateExpires,
+    });
   } catch (err) {
-    return false;
+    throw err;
   }
 
-  /* Send the actual email */
+  if (shouldEmail) sendEmail(type, confToken, user);
+
+  return true;
+}
+
+/* Send an email containing the confToken in a URL to the provided user. Return true on success,
+or false on failure. */
+export async function sendEmail(
+  type: string,
+  confToken: string,
+  user: User
+): Promise<boolean> {
   var emailURL: string;
   var subjectLine: string;
   var body: string;
@@ -74,7 +84,6 @@ export async function sendConfirmation(user: User, type: string) {
     html: body,
   };
   sgMail.send(msg).catch((error: any) => {
-    console.error(error);
     return false;
   });
 
@@ -87,7 +96,7 @@ export async function validateToken(
   token: string,
   type: string,
   email: string
-) {
+): Promise<boolean> {
   const dbTokenFormat = `${type}:${token}`; // we stored 'type' infront of the actual token, used to validate the type
 
   try {
@@ -106,8 +115,8 @@ export async function validateToken(
   return true;
 }
 
-/* Confirm the account associated with the 'token' confirmation. Return true on success, and false if the token was invalid
-    or another error occurred. */
+/* Confirm the account associated with the 'token' confirmation. Return true on success, or false 
+if the token was invalid or another error occurred. */
 export async function confirmEmail(
   token: string,
   email: string
@@ -121,7 +130,7 @@ export async function confirmEmail(
         confirmed: true,
         confirmationToken: "",
       },
-      { where: { email: email } }
+      { where: { email: email.toLowerCase() } }
     );
   } catch {
     return false;

@@ -1,31 +1,46 @@
 import { dbSync, makeUser } from "../../models/tests/testHelpers";
 import { User } from "../../models/user";
 import db from "../../models/index";
-import { sendConfirmation } from "../v1/emailService";
+import {
+  confirmEmail,
+  CONF_TYPE,
+  generateEmailToken,
+  validateToken,
+} from "../v1/emailService";
 
-dbSync();
+beforeAll(async () => {
+  await dbSync().catch((err) => fail(err));
+
+  await expect(
+    // create our test user
+    makeUser("confirmMe", "test@utoronto.ca")
+  ).resolves.toBeDefined();
+});
 
 const UserModel: typeof User = db.User;
 
-describe("Register and Confirm User ", () => {
-  describe("User Creation", () => {
-    test("Create basic users with valid name and email", async () => {
-      await expect(
-        makeUser("testPerson1", "pouya.ghiassi@mail.utoronto.ca")
-      ).resolves.toBeDefined();
-
+describe("Email account validation", () => {
+  describe("emailService", () => {
+    test("Generating a token properly updates User entry", async () => {
       /* Query to see if anything was inserted */
       const testPers1 = await UserModel.findOne({
         where: {
-          userName: "testPerson1",
+          userName: "confffirmMe",
         },
       });
+      console.log(testPers1);
 
-      if (testPers1 === null)
-        // to appease typescript
-        fail();
+      if (testPers1 === null) fail(); // required to appease TS
 
-      sendConfirmation(testPers1, "conf");
+      console.log(testPers1);
+
+      expect(testPers1.confirmed).toBeFalsy();
+      const status = await generateEmailToken(testPers1, CONF_TYPE, false);
+      expect(status).toBeTruthy();
+      expect(testPers1.confirmationToken).toContain(CONF_TYPE);
+
+      const curr = new Date().getTime();
+      expect(testPers1.confirmationTokenExpires.getTime()).toBeLessThan(curr); // token should not be expired since it is fresh
     });
   });
 });
