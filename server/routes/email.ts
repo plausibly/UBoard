@@ -1,13 +1,8 @@
 import { Router, Request, Response } from "express";
-import { confirmEmail, validateToken } from "../controllers/emailService";
-// import { confirmEmail, resetPassword } from "../controllers/mailService";
-
-const PW_RESET = "pw";
-const EMAIL_CONF = "conf";
+import { confirmEmail, validateToken } from "../controllers/v1/emailService";
 
 const emailRoute = Router();
 
-/* Account Email Verification */
 emailRoute.get(
   "/:type=:token&e=:email",
   async (req: Request, res: Response) => {
@@ -16,7 +11,7 @@ emailRoute.get(
         res.send("Email succesfully confirmed!");
     } else if (req.params.type === "r") {
       if (await validateToken(req.params.token, "pw", req.params.email)) {
-        // redirect to reset page, they input a password
+        //TODO redirect to reset page, they input a password
       }
     } else {
       res.sendStatus(404); // invalid request

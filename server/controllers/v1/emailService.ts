@@ -1,5 +1,5 @@
-import { User } from "../models/user";
-import db from "../models/index";
+import { User } from "../../models/user";
+import db from "../../models/index";
 import sgMail from "@sendgrid/mail";
 require("dotenv").config();
 sgMail.setApiKey(<string>process.env.SENDGRID_API);
@@ -55,14 +55,14 @@ export async function sendConfirmation(user: User, type: string) {
     subjectLine = "UBoard - Confirm your email address";
 
     body = `Thank you for signing up to UBoard, ${user.firstName}. \n
-        To continue with your account registration, please confirm your email address: ${emailURL}
+        To continue with your account registration, please confirm your email address: {{${emailURL}}}
         `;
   } else {
     emailURL = `${process.env.WEBSITE}/r=${confToken}&e=${user.email}`;
     subjectLine = "UBoard - Password Reset Requested";
     body = `Hello, ${user.firstName}. \n
         A password reset has been requested for the account: ${user.userName}. To reset your password, click the link below. 
-        ${emailURL}
+        {{${emailURL}}}
         `;
   }
 

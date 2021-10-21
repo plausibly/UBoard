@@ -1,7 +1,7 @@
 import { dbSync, makeUser } from "../../models/tests/testHelpers";
 import { User } from "../../models/user";
 import db from "../../models/index";
-import { sendConfirmation } from "../emailService";
+import { sendConfirmation } from "../v1/emailService";
 
 dbSync();
 
