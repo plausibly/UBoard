@@ -105,10 +105,10 @@ export async function validateToken(
     if (
       !target ||
       target.confirmationToken !== dbTokenFormat ||
-      target.confirmationTokenExpires.getTime() < currTime
+      target.confirmationTokenExpires.getTime() <= currTime
     )
       return false;
-  } catch {
+  } catch (err) {
     return false;
   }
 

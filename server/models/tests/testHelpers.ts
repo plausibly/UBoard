@@ -9,7 +9,7 @@ the entry that was created on success, or throws an error on failure.
 const UserModel: typeof User = db.User;
 const PostModel: typeof Post = db.Post;
 
-export async function makeUser(user: string, email: string): Promise<User> {
+export async function makeUser(user: string, email: string) {
   const testUser: User = await UserModel.create({
     firstName: "test",
     lastName: "test",
