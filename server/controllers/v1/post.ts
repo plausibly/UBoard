@@ -1,8 +1,4 @@
 import {Post} from '../../models/post';
-import db from '../../models';
-
-// The return type of a Post associated with the Post's User.
-export type PostUser = Post & {User: {firstName: string; lastName: string}};
 
 // The maximum number of results to return.
 const MAX_RESULTS = 50;
@@ -24,26 +20,17 @@ export default class PostController {
   async getPosts(
     limit: number,
     offset: number
-  ): Promise<{status: number; data: {result?: PostUser[]; count: number}}> {
+  ): Promise<{status: number; data: {result?: Post[]; count: number}}> {
     const data = await this.postsRepo.findAndCountAll({
       limit: limit > MAX_RESULTS ? MAX_RESULTS : limit,
       // Since we are returning multiple results, we want to limit the data. This data will be shown
       // in a list, so ignoring body is ok as it won't be displayed anyway.
       attributes: ['id', 'title', 'feedbackScore', 'createdAt'],
-      include: [
-        {
-          model: db.User,
-          attributes: ['firstName', 'lastName', 'userName'],
-        },
-      ],
       order: [['createdAt', 'DESC']],
       offset: offset,
     });
 
-    return {
-      status: data.count > 0 ? 200 : 204,
-      data: {result: data.rows as PostUser[], count: data.count},
-    };
+    return {status: data.count > 0 ? 200 : 204, data: {result: data.rows, count: data.count}};
   }
 
   /**
@@ -54,15 +41,8 @@ export default class PostController {
    */
   async getPost(
     postID: string
-  ): Promise<{status: number; data: {result?: PostUser; message?: string}}> {
-    const data = (await this.postsRepo.findByPk(postID, {
-      include: [
-        {
-          model: db.User,
-          attributes: ['firstName', 'lastName', 'userName'],
-        },
-      ],
-    })) as PostUser;
+  ): Promise<{status: number; data: {result?: Post; message?: string}}> {
+    const data = await this.postsRepo.findByPk(postID);
 
     if (!data) {
       return {

@@ -33,7 +33,6 @@ export class Post
   UserId!: string; /* Foreign Key from UserId */
 
   static associate(model: any) {
-    Post.belongsTo(model.User);
     Post.belongsToMany(model.Tag, {
       through: "PostTags",
     }); /* Junction table for Post & Tags relationship */
