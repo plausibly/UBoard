@@ -1,11 +1,11 @@
 import mailgun from 'mailgun-js';
 
 export default class EmailService {
-  private apiRoute: string;
+  private baseRoute: string;
   private mg: mailgun.Mailgun;
 
-  constructor(apiRoute: string) {
-    this.apiRoute = apiRoute;
+  constructor(baseRoute: string) {
+    this.baseRoute = baseRoute;
     this.mg = mailgun({
       apiKey: <string>process.env.MAIL_API,
       domain: <string>process.env.MAIL_DOMAIN,

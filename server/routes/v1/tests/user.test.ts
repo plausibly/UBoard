@@ -4,6 +4,10 @@ import db from '../../../models/index';
 import { User } from '../../../models/user';
 import { signUpHandler, signInHandler } from '../user';
 
+jest.mock('../../../services/emailService', () => {
+  return jest.fn();
+});
+
 function mockRequest(data: any) {
   return { body: data };
 }
