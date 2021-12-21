@@ -1,10 +1,15 @@
-import sgMail from '@sendgrid/mail';
+import mailgun from 'mailgun-js';
+
 export default class EmailService {
   private apiRoute: string;
+  private mg: mailgun.Mailgun;
 
   constructor(apiRoute: string) {
     this.apiRoute = apiRoute;
-    sgMail.setApiKey(<string>process.env.SENDGRID_API);
+    this.mg = mailgun({
+      apiKey: <string>process.env.MAIL_API,
+      domain: <string>process.env.MAIL_DOMAIN,
+    });
   }
 
   /** Sends an email using the SendGrid API with the provided parameters. Returns the success status. */
@@ -14,7 +19,7 @@ export default class EmailService {
     body: string,
     html: string
   ) {
-    const msg = {
+    const data = {
       to: emailAddress,
       from: <string>process.env.FROM_EMAIL,
       subject: subjectLine,
@@ -23,7 +28,7 @@ export default class EmailService {
     };
 
     try {
-      await sgMail.send(msg);
+      await this.mg.messages().send(data);
     } catch (err) {
       console.error(`Send email failed: ${err}`);
       return false;
