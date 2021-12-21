@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PostDashboard from "./containers/PostDashboard";
 import { createTheme } from "@mui/material/styles";
 import ThemeProvider from "@mui/system/ThemeProvider";
+import ViewPostDialog, { EditPostDialog } from "./components/ViewPostDialog";
 
 const theme = createTheme({
   palette: {
@@ -19,7 +20,7 @@ function App() {
     <ThemeProvider theme={theme} >
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AuthContainer />} />
+        <Route path="/" element={<ViewPostDialog/>} />
         <Route path="/dashboard" element={<PostDashboard/>} /> 
         {/* TODO: Ensure authenticated then redirect to dashboard */}
       </Routes>
