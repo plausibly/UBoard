@@ -5,7 +5,12 @@ import { User } from '../../../models/user';
 import { signUpHandler, signInHandler } from '../user';
 
 jest.mock('../../../services/emailService', () => {
-  return jest.fn();
+  return jest.fn().mockImplementation(() => {
+    return {
+      sendConfirmEmail: jest.fn(() => true),
+      sendResetEmail: jest.fn(() => true),
+    };
+  });
 });
 
 function mockRequest(data: any) {
