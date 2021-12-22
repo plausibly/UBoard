@@ -5,5 +5,3 @@ setup:
 build:
   docker:
     web: Dockerfile
-  config:
-    MAPS_API: REACT_APP_MAPS_API
