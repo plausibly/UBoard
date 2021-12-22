@@ -15,7 +15,9 @@ RUN yarn install --production
 COPY --from=server_builder /app/server/build/models /app/client/node_modules/models
 COPY --from=server_builder /app/server/build/types/models /app/client/node_modules/@types/models
 
-RUN export REACT_APP_MAPS_API=$MAPS_API && yarn run build
+ENV REACT_APP_MAPS_API=$MAPS_API
+
+RUN yarn run build
 
 # => Run container
 FROM nginx:1.20-alpine as base

@@ -2,8 +2,3 @@ setup:
   addons:
     - plan: heroku-postgresql
       as: DATABASE
-build:
-  docker:
-    web: Dockerfile
-  config:
-    MAPS_API: ${{secrets.REACT_MAPS_API}}
