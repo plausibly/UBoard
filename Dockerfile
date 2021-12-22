@@ -6,7 +6,7 @@ RUN yarn install && yarn run build
 
 # => Build client
 ARG MAPS_API
-ENV REACT_APP_MAPS_API=${MAPS_API}
+ENV REACT_APP_MAPS_API=$MAPS_API
 FROM node:16-alpine as client_builder
 WORKDIR /app/client
 COPY client .
