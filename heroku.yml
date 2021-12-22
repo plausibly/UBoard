@@ -1,6 +1,4 @@
 setup:
-  config:
-    env:file: .env
   addons:
     - plan: heroku-postgresql
       as: DATABASE
